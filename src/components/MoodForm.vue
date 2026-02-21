@@ -13,7 +13,7 @@
       <h3>Mood History</h3>
       <ul>
         <li v-for="m in moods" :key="m.id">
-          {{ m.name }} - {{ m.mood }}
+          <strong>{{ m.user_name }}</strong>: {{ m.mood_text }}
         </li>
       </ul>
     </div>
@@ -39,9 +39,16 @@ export default {
         return;
       }
       try {
-        await api.post("/api/moods", { name: this.name, mood: this.mood });
+        // Inadjust ang payload para mag-match sa Backend (full_name, mood_text)
+        // At tinanggal ang /api dahil nasa api.js na iyon
+        await api.post("/moods", { 
+          full_name: this.name, 
+          mood_text: this.mood 
+        });
+        
         this.name = "";
         this.mood = "";
+        this.errorMessage = ""; // Linisin ang error message kapag success
         this.loadMoods();
       } catch (err) {
         console.error(err);
@@ -50,7 +57,8 @@ export default {
     },
     async loadMoods() {
       try {
-        const res = await api.get("/api/moods");
+        // Tinanggal ang /api dahil nasa api.js na iyon
+        const res = await api.get("/moods");
         this.moods = res.data;
       } catch (err) {
         console.error(err);
@@ -63,9 +71,3 @@ export default {
   }
 };
 </script>
-
-<style>
-.container { max-width: 600px; margin: auto; font-family: Arial; }
-.card { padding: 15px; border: 1px solid #ddd; margin-bottom: 10px; }
-.error { color: red; }
-</style>
