@@ -39,8 +39,7 @@ export default {
         return;
       }
       try {
-        // Inadjust ang payload para mag-match sa Backend (full_name, mood_text)
-        // At tinanggal ang /api dahil nasa api.js na iyon
+        // Siguraduhin na full_name at mood_text ang spelling
         await api.post("/moods", { 
           full_name: this.name, 
           mood_text: this.mood 
@@ -48,7 +47,7 @@ export default {
         
         this.name = "";
         this.mood = "";
-        this.errorMessage = ""; // Linisin ang error message kapag success
+        this.errorMessage = "";
         this.loadMoods();
       } catch (err) {
         console.error(err);
