@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export default axios.create({
-  // Dinagdagan natin ng folder name bago ang /api
-  baseURL: "https://lab-5-vue-frontend-ai-ui-integration.onrender.com/CRUD-API-MySQL-AI-Integration/api" 
+  // Option A: Ito ang pinaka-safe dahil tinanggal natin ang /api na nagko-cause ng 404
+  baseURL: "https://lab-5-vue-frontend-ai-ui-integration.onrender.com" 
 });
