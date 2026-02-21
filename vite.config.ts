@@ -6,6 +6,7 @@ import vueDevTools from 'vite-plugin-vue-devtools'
 
 // https://vite.dev/config/
 export default defineConfig({
+  base: '/Lab-5-Vue-Frontend-AI-UI-Integration/', // <- ADD THIS for GitHub Pages
   plugins: [
     vue(),
     vueDevTools(),
