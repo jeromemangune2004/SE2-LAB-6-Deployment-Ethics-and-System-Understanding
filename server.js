@@ -9,11 +9,18 @@ dotenv.config();
 const app = express();
 
 // Middlewares
-app.use(cors()); // Pinapayagan ang lahat ng origins (GitHub Pages)
-app.use(express.json()); // Importante para mabasa ang POST request body
+// Mas maigi na naka-specify ang origin para hindi harangin ng browser
+app.use(cors({
+  origin: "https://lab-6-front-end.onrender.com",
+  methods: ["GET", "POST"],
+  credentials: true
+}));
+
+app.use(express.json());
 
 // Routes
-app.use("/moods", moodRoutes);
+// Ito ang kailangang mag-match sa api.js at MoodForm.vue
+app.use("/moods", moodRoutes);  
 
 // Test DB route
 app.get("/test-db", async (req, res) => {
@@ -25,6 +32,7 @@ app.get("/test-db", async (req, res) => {
   }
 });
 
+// Root Route - Ito ang magpapatunay kung "Live" na ang backend
 app.get("/", (req, res) => {
   res.send("Backend is running and connected!");
 });
