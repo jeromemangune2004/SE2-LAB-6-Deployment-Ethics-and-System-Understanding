@@ -1,6 +1,6 @@
 import axios from "axios";
 
 export default axios.create({
-  // Siguraduhin na ito ang eksaktong format:
-  baseURL: "https://lab-5-vue-frontend-ai-ui-integration.onrender.com/api" 
+  // Dapat itong tumuro sa iyong BACKEND service, hindi sa frontend:
+  baseURL: "https://se2-lab-6-deployment-ethics-and-system.onrender.com/api" 
 });
