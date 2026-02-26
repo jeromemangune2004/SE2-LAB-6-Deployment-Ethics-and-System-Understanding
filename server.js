@@ -11,7 +11,7 @@ const app = express();
 // Middlewares
 // Mas maigi na naka-specify ang origin para hindi harangin ng browser
 app.use(cors({
-  origin: "https://lab-6-front-end.onrender.com",
+  origin: "https://lab-6-front-endd.onrender.com",
   methods: ["GET", "POST"],
   credentials: true
 }));
