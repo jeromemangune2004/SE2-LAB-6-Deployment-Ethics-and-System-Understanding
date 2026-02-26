@@ -4,7 +4,7 @@ import { getAIResponse } from "../services/aiService.js";
 
 const router = express.Router();
 
-
+  
 router.post("/", async (req, res) => {
   const { full_name, mood_text } = req.body; 
 

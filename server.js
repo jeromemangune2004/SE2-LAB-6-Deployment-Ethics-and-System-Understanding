@@ -13,7 +13,7 @@ app.use(cors()); // Pinapayagan ang lahat ng origins (GitHub Pages)
 app.use(express.json()); // Importante para mabasa ang POST request body
 
 // Routes
-app.use("/api/moods", moodRoutes);
+app.use("/moods", moodRoutes);
 
 // Test DB route
 app.get("/test-db", async (req, res) => {
