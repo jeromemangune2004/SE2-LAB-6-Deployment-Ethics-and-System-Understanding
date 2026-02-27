@@ -1,5 +1,8 @@
 import express from "express";
 import { db } from "../db.js";
+// 1. IMPORT: Siguraduhin na naka-import ang AI service sa taas
+import { getAIResponse } from "../services/aiService.js"; 
+
 const router = express.Router();
 
 router.get("/", async (req, res) => {
@@ -13,35 +16,37 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { full_name, mood_text } = req.body;
-  
   const manualId = Math.floor(Math.random() * 1000000); 
 
-  // FIX: SQL-safe format (YYYY-MM-DD HH:MM:SS) para hindi mag-error ang database
   const now = new Date(new Date().getTime() + (8 * 60 * 60 * 1000))
               .toISOString()
               .slice(0, 19)
               .replace('T', ' ');
 
   try {
-    // 1. I-save sa 'users' table
+    // 2. DYNAMIC MESSAGE: Tawagin ang AI service base sa mood_text ng user
+    const aiMessage = await getAIResponse(mood_text);
+
+    // 3. DATABASE SAVING: Isama ang lahat sa tamang tables
     await db.query("INSERT INTO users (id, full_name) VALUES (?, ?)", [manualId, full_name]);
 
-    // 2. I-save sa 'mood_entries' table kasama ang created_at
     await db.query(
       "INSERT INTO mood_entries (id, user_name, mood_text, created_at) VALUES (?, ?, ?, ?)", 
       [manualId, full_name, mood_text, now]
     );
 
-    // 3. I-save sa 'ai_responses' table
-    const aiMessage = `Keep your head up, ${full_name}! You're doing great.`;
+    // Dito na papasok ang iba-ibang messages sa Railway table mo
     await db.query(
       "INSERT INTO ai_responses (id, mood_entry_id, ai_message) VALUES (?, ?, ?)", 
       [manualId, manualId, aiMessage]
     );
 
-    res.status(201).json({ message: "Success! Data saved manually with timestamp." });
+    res.status(201).json({ 
+      message: "Success!", 
+      ai_response: aiMessage 
+    });
   } catch (err) {
-    console.error("SQL Error:", err.message); // Makikita mo ito sa Render logs
+    console.error("SQL Error:", err.message);
     res.status(500).json({ error: err.message });
   }
 });
