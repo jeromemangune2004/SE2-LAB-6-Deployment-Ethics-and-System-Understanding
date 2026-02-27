@@ -13,32 +13,30 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
   const { full_name, mood_text } = req.body;
-  
-  // Gagawa tayo ng random ID para hindi mag-duplicate sa Primary Key
   const manualId = Math.floor(Math.random() * 1000000); 
+  
+  // Gagawa tayo ng readable date string
+  const now = new Date().toLocaleString("en-US", { timeZone: "Asia/Manila" }); 
 
   try {
-    // 1. I-save sa 'users' table
     await db.query("INSERT INTO users (id, full_name) VALUES (?, ?)", [manualId, full_name]);
 
-    // 2. I-save sa 'mood_entries' table gamit ang parehong ID
+    // Isama ang 'now' sa created_at column (kahit VARCHAR pa iyan sa Railway)
     await db.query(
-      "INSERT INTO mood_entries (id, user_name, mood_text) VALUES (?, ?, ?)", 
-      [manualId, full_name, mood_text]
+      "INSERT INTO mood_entries (id, user_name, mood_text, created_at) VALUES (?, ?, ?, ?)", 
+      [manualId, full_name, mood_text, now]
     );
 
-    // 3. I-save sa 'ai_responses' table
-    const aiMessage = `Keep your head up, ${full_name}! You're doing great.`;
+    const aiMessage = `Keep your head up, ${full_name}!`;
     await db.query(
       "INSERT INTO ai_responses (id, mood_entry_id, ai_message) VALUES (?, ?, ?)", 
       [manualId, manualId, aiMessage]
     );
 
-    res.status(201).json({ message: "Success! Data saved manually." });
+    res.status(201).json({ message: "Success!" });
   } catch (err) {
-    console.error("SQL Error:", err);
     res.status(500).json({ error: err.message });
   }
 });
 
-export default router;
+export default router;      
