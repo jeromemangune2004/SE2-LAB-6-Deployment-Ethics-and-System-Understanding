@@ -1,37 +1,46 @@
 <template>
-  <div class="app-wrapper">
-    <div class="container">
-      <header>
-        <h1>🌱 Mood Tracker</h1>
-        <p>How are you feeling today?</p>
-      </header>
-
-      <div class="card form-card">
-        <div class="input-group">
-          <label>Full Name</label>
-          <input v-model="name" placeholder="Enter your name..." />
+  <div class="fb-body">
+    <div class="fb-container">
+      <div class="fb-card post-box">
+        <div class="post-header">
+          <div class="avatar">JM</div>
+          <span class="placeholder-text">What's your mood, {{ name || 'Jerome' }}?</span>
         </div>
         
-        <div class="input-group">
-          <label>Your Mood</label>
-          <input v-model="mood" placeholder="e.g. Happy, Tired, Grateful..." />
+        <div class="post-inputs">
+          <input v-model="name" class="fb-input-name" placeholder="Full Name" />
+          <textarea v-model="mood" class="fb-textarea" placeholder="Describe how you feel..."></textarea>
         </div>
         
-        <button @click="submitMood" class="submit-btn">Submit Entry</button>
+        <div class="post-actions">
+          <button @click="submitMood" class="fb-post-btn">Post Mood</button>
+        </div>
         <p v-if="errorMessage" class="error-msg">{{ errorMessage }}</p>
       </div>
 
-      <div class="card history-card">
-        <h3>📜 Recent History</h3>
-        <div v-if="moods.length === 0" class="empty-state">No entries yet. Share your mood!</div>
-        <ul v-else>
-          <li v-for="m in moods" :key="m.id" class="mood-item">
-            <div class="mood-content">
+      <div class="fb-feed">
+        <h3 class="feed-title">Recent Updates</h3>
+        <div v-if="moods.length === 0" class="fb-card empty-state">No posts yet. Share your mood!</div>
+        
+        <div v-for="m in moods" :key="m.id" class="fb-card feed-item">
+          <div class="feed-header">
+            <div class="avatar small">{{ m.user_name.charAt(0).toUpperCase() }}</div>
+            <div class="user-info">
               <span class="user-name">{{ m.user_name }}</span>
-              <span class="mood-tag">{{ m.mood_text }}</span>
+              <span class="post-date">{{ m.created_at || 'Just now' }} · 🌎</span>
             </div>
-          </li>
-        </ul>
+          </div>
+          
+          <div class="feed-content">
+            <p>Feeling <span class="mood-highlight">{{ m.mood_text }}</span></p>
+          </div>
+          
+          <div class="feed-footer">
+            <div class="footer-btn">👍 Like</div>
+            <div class="footer-btn">💬 Comment</div>
+            <div class="footer-btn">➡️ Share</div>
+          </div>
+        </div>
       </div>
     </div>
   </div>
@@ -67,7 +76,7 @@ export default {
         this.loadMoods();
       } catch (err) {
         console.error(err);
-        this.errorMessage = "Error submitting mood. Check backend or network.";
+        this.errorMessage = "Error submitting mood. Check backend.";
       }
     },
     async loadMoods() {
@@ -87,139 +96,158 @@ export default {
 </script>
 
 <style scoped>
-/* Main Background */
-.app-wrapper {
+.fb-body {
+  background-color: #f0f2f5;
   min-height: 100vh;
-  background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
-  padding: 40px 20px;
-  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  padding: 20px;
+  font-family: Helvetica, Arial, sans-serif;
 }
 
-.container {
+.fb-container {
   max-width: 500px;
   margin: 0 auto;
 }
 
-header {
-  text-align: center;
-  margin-bottom: 30px;
-}
-
-h1 {
-  color: #2d3436;
-  font-size: 2.5rem;
-  margin-bottom: 5px;
-}
-
-header p {
-  color: #636e72;
-}
-
-/* Card Styling */
-.card {
+.fb-card {
   background: white;
-  border-radius: 16px;
-  padding: 25px;
-  box-shadow: 0 10px 25px rgba(0,0,0,0.05);
-  margin-bottom: 25px;
-}
-
-/* Form Styling */
-.input-group {
-  margin-bottom: 15px;
-}
-
-label {
-  display: block;
-  font-size: 0.9rem;
-  font-weight: 600;
-  color: #2d3436;
-  margin-bottom: 5px;
-}
-
-input {
-  width: 100%;
-  padding: 12px 15px;
-  border: 2px solid #dfe6e9;
   border-radius: 8px;
-  font-size: 1rem;
-  transition: all 0.3s ease;
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+  margin-bottom: 16px;
+  padding: 12px 16px;
+}
+
+/* Post Box */
+.post-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+}
+
+.avatar {
+  width: 40px;
+  height: 40px;
+  background: #1877f2;
+  color: white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: bold;
+}
+
+.avatar.small {
+  width: 36px;
+  height: 36px;
+  font-size: 14px;
+}
+
+.placeholder-text {
+  color: #65676b;
+  font-size: 17px;
+}
+
+.fb-input-name {
+  width: 100%;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  padding: 8px 12px;
+  margin-bottom: 8px;
+  font-size: 14px;
   box-sizing: border-box;
 }
 
-input:focus {
-  outline: none;
-  border-color: #6c5ce7;
-  box-shadow: 0 0 0 4px rgba(108, 92, 231, 0.1);
+.fb-textarea {
+  width: 100%;
+  border: 1px solid #dddfe2;
+  border-radius: 6px;
+  padding: 12px;
+  font-size: 15px;
+  min-height: 80px;
+  resize: none;
+  box-sizing: border-box;
 }
 
-.submit-btn {
+.fb-post-btn {
   width: 100%;
-  padding: 14px;
-  background: #6c5ce7;
+  background-color: #1877f2;
   color: white;
   border: none;
-  border-radius: 8px;
-  font-size: 1.1rem;
-  font-weight: 600;
+  border-radius: 6px;
+  padding: 8px;
+  font-weight: bold;
+  font-size: 15px;
   cursor: pointer;
-  transition: background 0.3s ease;
-}
-
-.submit-btn:hover {
-  background: #5b4cc4;
-}
-
-.error-msg {
-  color: #d63031;
-  font-size: 0.85rem;
   margin-top: 10px;
-  text-align: center;
 }
 
-/* History List Styling */
-h3 {
-  margin-top: 0;
-  color: #2d3436;
-  border-bottom: 2px solid #f1f2f6;
-  padding-bottom: 10px;
+.fb-post-btn:hover {
+  background-color: #166fe5;
 }
 
-ul {
-  list-style: none;
-  padding: 0;
+/* Feed Items */
+.feed-title {
+  font-size: 18px;
+  color: #65676b;
+  margin: 20px 0 10px 5px;
 }
 
-.mood-item {
-  background: #f9f9fb;
-  padding: 15px;
-  border-radius: 10px;
-  margin-bottom: 10px;
-  border-left: 5px solid #6c5ce7;
-  transition: transform 0.2s ease;
+.feed-header {
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
-.mood-item:hover {
-  transform: translateX(5px);
+.user-info {
+  display: flex;
+  flex-direction: column;
 }
 
 .user-name {
-  font-weight: 700;
-  color: #2d3436;
-  margin-right: 10px;
+  font-weight: bold;
+  color: #050505;
 }
 
-.mood-tag {
-  background: #a29bfe;
-  color: white;
-  padding: 2px 10px;
-  border-radius: 20px;
-  font-size: 0.85rem;
+.post-date {
+  font-size: 12px;
+  color: #65676b;
 }
 
-.empty-state {
+.feed-content {
+  margin: 15px 0;
+  font-size: 16px;
+  color: #050505;
+}
+
+.mood-highlight {
+  font-weight: bold;
+  color: #1877f2;
+}
+
+.feed-footer {
+  border-top: 1px solid #ebedf0;
+  padding-top: 8px;
+  display: flex;
+  justify-content: space-around;
+}
+
+.footer-btn {
+  color: #65676b;
+  font-weight: 600;
+  font-size: 14px;
+  cursor: pointer;
+  padding: 6px 12px;
+  border-radius: 4px;
+}
+
+.footer-btn:hover {
+  background-color: #f2f2f2;
+}
+
+.error-msg {
+  color: #f02849;
+  font-size: 13px;
   text-align: center;
-  color: #b2bec3;
-  padding: 20px;
+  margin-top: 8px;
 }
 </style>
